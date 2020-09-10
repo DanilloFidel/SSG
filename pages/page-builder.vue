@@ -23,9 +23,21 @@ export default {
   computed: {
     ...mapGetters(["isAuthenticated", "loggedInUser"])
   },
+  // eslint-disable-next-line vue/order-in-components
+  asyncData() {
+    console.log("no server");
+  },
   fetch() {
     console.log("primeiro fetch");
     return this.login().then(() => {
+      this.componentList.push({
+        w: 100,
+        h: 400,
+        id: 80,
+        x: 100,
+        y: 20,
+        typeId: 5
+      });
       this.$axios
         .get("/screenComponent?screenId=17&pageWidth=1863&pageHeight=933")
         .then(res => {

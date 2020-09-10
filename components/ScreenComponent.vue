@@ -1,22 +1,24 @@
 <template>
   <div>
-    <HotTable
-      :id="`hotTableID${component.id}`"
-      :ref="`tableRef${component.id}`"
-      :style="style"
-      :render-all-rows="false"
-      :data="data"
-      stretch-h="all"
-      :columns="columns"
-      row-heights="25"
-      :nested-headers="nestedHeaders"
-      :hidden-columns="{
+    <no-ssr>
+      <HotTable
+        :id="`hotTableID${component.id}`"
+        :ref="`tableRef${component.id}`"
+        :style="style"
+        :render-all-rows="false"
+        :data="data"
+        stretch-h="all"
+        :columns="columns"
+        row-heights="25"
+        :nested-headers="nestedHeaders"
+        :hidden-columns="{
         columns: [0],
         indicators: false,
       }"
-      class="base-table-sheet-component__container"
-      license-key="64795-73e60-d5534-f4a12-30c00"
-    ></HotTable>
+        class="base-table-sheet-component__container"
+        license-key="64795-73e60-d5534-f4a12-30c00"
+      ></HotTable>
+    </no-ssr>
   </div>
 </template>
 
@@ -46,7 +48,6 @@ export default {
         this.stringColumns = res.data.columns;
         this.nestedHeaders = res.data.nestedHeaders;
         console.log("tamnho do array", this.data.length);
-        console.log("as columns chegaram: ", this.stringColumns);
       })
       .catch(e => console.log("err: ", e));
   },
@@ -63,12 +64,14 @@ export default {
     }
   },
   created() {
-    console.log("tabela criada no client: ", process.client);
+    process.client
+      ? console.log("tabela no client")
+      : console.log("tabela no server");
   },
   mounted() {
     // eslint-disable-next-line no-eval
     this.columns = eval(this.stringColumns);
-    console.log("eval das columns: ", this.stringColumns);
+    console.log("pending?", this.$fetchState.pending);
   },
   methods: {}
 };
