@@ -57,7 +57,7 @@ export default {
     async login() {
       try {
         await this.$auth.loginWith("local", {
-          data: { username: "dev@mitraecp.com", password: "mitra123" }
+          data: { username: "ADCIONAR UM NOME DE USUARIO", password: "ADICIONAR UMA SENHA" }
         });
       } catch (err) {
         console.log("erro:", err);
