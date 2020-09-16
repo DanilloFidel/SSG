@@ -1,29 +1,34 @@
 <template>
   <div>
-    <no-ssr>
-      <HotTable
-        :id="`hotTableID${component.id}`"
-        :ref="`tableRef${component.id}`"
-        :style="style"
-        :render-all-rows="false"
-        :data="data"
-        stretch-h="all"
-        :columns="columns"
-        row-heights="25"
-        :nested-headers="nestedHeaders"
-        :hidden-columns="{
+    <client-only placeholder="Loading...">
+      <v-row>
+        id: 640
+        <v-col>
+          <HotTable
+            :style="style"
+            :render-all-rows="false"
+            :data="data"
+            stretch-h="all"
+            :columns="columns"
+            row-heights="25"
+            :settings="settings"
+            :nested-headers="nestedHeaders"
+            :hidden-columns="{
         columns: [0],
         indicators: false,
       }"
-        class="base-table-sheet-component__container"
-        license-key="64795-73e60-d5534-f4a12-30c00"
-      ></HotTable>
-    </no-ssr>
+            class="base-table-sheet-component__container"
+            license-key="64795-73e60-d5534-f4a12-30c00"
+          ></HotTable>
+        </v-col>
+      </v-row>
+    </client-only>
   </div>
 </template>
 
 <script>
 import HotTable from "~/plugins/vue-handsontable";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   components: {
@@ -37,30 +42,41 @@ export default {
     }
   },
   fetch() {
-    console.log("fetch");
+    console.log("fetch na tabela");
+    // return this.$axios
+    //   .get(
+    //     "https://mitraapi.ddns.net:2180/sourceContent/640?format=array&sourceTempId=0&userId=1&typeIdFront=5&stepId=0&screenId=63&preview=false"
+    //   )
     return this.$axios
-      .get(
-        `/sourceContent/${this.component.id}?format=array&sourceTempId=0&userId=1&typeIdFront=5&stepId=0&screenId=17&preview=false`
-      )
+      .get("http://localhost:3000/data.json")
       .then(res => {
-        console.log("pegou dados da tabela");
         this.data = res.data.dataSourceOld;
         this.stringColumns = res.data.columns;
         this.nestedHeaders = res.data.nestedHeaders;
-        console.log("tamnho do array", this.data.length);
       })
       .catch(e => console.log("err: ", e));
+  },
+  watch: {
+    reload: "load"
   },
   data: () => ({
     data: [],
     columns: [],
     stringColumns: [],
     nestedHeaders: [],
-    show: false
+    show: false,
+    tables: 4,
+    settings: {
+      afterChange: () => {
+        // eslint-disable-next-line no-undef
+        console.log("after change", arguments);
+      }
+    }
   }),
   computed: {
+    ...mapState(["reload"]),
     style() {
-      return `width: ${this.component.w}px; height: ${this.component.h}px; overflow: auto`;
+      return `width: ${1200}px; height: ${800}px; overflow: auto`;
     }
   },
   created() {
@@ -70,10 +86,40 @@ export default {
   },
   mounted() {
     // eslint-disable-next-line no-eval
-    this.columns = eval(this.stringColumns);
+    const a = eval(this.stringColumns);
+    this.getColumns(a).then(cols => {
+      this.columns = cols.map(e => e);
+    });
+    // eslint-disable-next-line no-eval
+    this.settings.columnSorting = {
+      // eslint-disable-next-line object-shorthand
+      compareFunctionFactory: function (sortOrder) {
+        return function (value, nextValue) {
+          if (sortOrder === "asc") {
+            return value > nextValue ? 1 : -1;
+          }
+          if (sortOrder === "desc") {
+            return value < nextValue ? 1 : -1;
+          }
+        };
+      }
+    };
     console.log("pending?", this.$fetchState.pending);
   },
-  methods: {}
+  methods: {
+    load() {},
+    getColumns(a = []) {
+      const x = [];
+      return new Promise(resolve => {
+        a.forEach(element => {
+          if (element) {
+            x.push(element);
+          }
+        });
+        resolve(x);
+      });
+    }
+  }
 };
 </script>
 

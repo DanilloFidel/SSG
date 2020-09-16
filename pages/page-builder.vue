@@ -23,10 +23,6 @@ export default {
   computed: {
     ...mapGetters(["isAuthenticated", "loggedInUser"])
   },
-  // eslint-disable-next-line vue/order-in-components
-  asyncData() {
-    console.log("no server");
-  },
   fetch() {
     console.log("primeiro fetch");
     return this.login().then(() => {
@@ -39,7 +35,7 @@ export default {
         typeId: 5
       });
       this.$axios
-        .get("/screenComponent?screenId=17&pageWidth=1863&pageHeight=933")
+        .get("/screenComponent?screenId=63&pageWidth=1863&pageHeight=933")
         .then(res => {
           console.log("pegou dados da tabela");
           this.componentList = res.data.filter(c => c.typeId === 5);
@@ -69,11 +65,11 @@ export default {
     },
     compStyle(c) {
       return {
-        top: `${c.y}px`,
-        left: `${c.x}px`,
-        height: `${c.h}px`,
-        width: `${c.w}px`,
-        backgroundColor: c.color
+        // top: `${c.y}px`,
+        // left: `${c.x}px`,
+        // height: `${500}px`,
+        // width: `${600}px`,
+        // backgroundColor: c.color
       };
     }
   }
@@ -85,7 +81,7 @@ export default {
   &__dev-mode {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 1000px;
     background: #ffffff;
     background-position: 0 0, 13px 13px;
     background-size: 26px 26px;
@@ -107,8 +103,4 @@ export default {
   }
 }
 
-.component {
-  position: absolute;
-  border: 1px solid red;
-}
 </style>
